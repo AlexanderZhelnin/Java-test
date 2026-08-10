@@ -30,19 +30,13 @@ public class DrawerService {
         List<IObraz> result = new ArrayList<>();
 
         for (IPrimitive g : l.primitives) {
-            if (g.rect.left >= rect.left &&
-                    g.rect.bottom >= rect.bottom &&
-                    g.rect.right <= rect.right &&
-                    g.rect.top <= rect.top) {
+            if (g.rect.left >= rect.left && g.rect.bottom >= rect.bottom && g.rect.right <= rect.right && g.rect.top <= rect.top) {
                 // Целиком лежит внутри прямоугольника
                 IObraz obraz = new IObraz();
                 obraz.name = g.name;
                 obraz.coords = g.coords.clone();
                 result.add(obraz);
-            } else if (g.rect.left < rect.right &&
-                    g.rect.bottom < rect.top &&
-                    g.rect.right > rect.left &&
-                    g.rect.top > rect.bottom) {
+            } else if (g.rect.left < rect.right && g.rect.bottom < rect.top && g.rect.right > rect.left && g.rect.top > rect.bottom) {
                 // Необходимо отсекать
                 switch (l.type) {
                     case LINE:
@@ -73,7 +67,7 @@ public class DrawerService {
     /**
      * Подготовка данных для отрисовки
      */
-    public ILayer[] build(ILegend[] ls, DrawProperties pr, Rect rect) {
+    public List<ILayer> build(ILegend[] ls, DrawProperties pr, Rect rect) {
         List<ILayer> result = new ArrayList<>();
 
         double mashtab = 1 / pr.scale;
@@ -98,10 +92,10 @@ public class DrawerService {
 
             ILayer layer = new ILayer();
             layer.legendId = l.id;
-            layer.obrazes = mas.toArray(new IObraz[0]);
+            layer.obrazes = mas;
             result.add(layer);
         }
 
-        return result.toArray(new ILayer[0]);
+        return result;
     }
 }

@@ -7,7 +7,7 @@ import com.example.javatest.service.StringsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * REST API контроллер для картографических операций
@@ -85,16 +85,16 @@ public class TestController {
         rect.bottom = DEFAULT_BOTTOM;
         rect.right = DEFAULT_RIGHT;
 
-        ILayer[] result = drawerService.build(this.initService.ls, pr, rect);
+        List<ILayer> result = drawerService.build(this.initService.ls, pr, rect);
 
-        return result.length;
+        return result.size();
     }
 
     /**
      * Получение преобразованных геоданных, возвращается реальный результат
      */
     @GetMapping("/mapjson")
-    public ILayer[] mapJSON(@RequestParam(defaultValue = "0") double x,
+    public List<ILayer> mapJSON(@RequestParam(defaultValue = "0") double x,
             @RequestParam(defaultValue = "0") double y) {
         x /= 100;
         y /= 100;
@@ -111,12 +111,12 @@ public class TestController {
         rect.bottom = DEFAULT_BOTTOM;
         rect.right = DEFAULT_RIGHT;
 
-        ILayer[] result = drawerService.build(this.initService.ls, pr, rect);
+        List<ILayer> result = drawerService.build(this.initService.ls, pr, rect);
 
-        if (result.length < 5)
+        if (result.size() < 5)
             return result;
         else
-            return Arrays.copyOf(result, 5);
+            return result.subList(0, 5);
     }
 
     /**

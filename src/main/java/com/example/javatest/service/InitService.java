@@ -4,15 +4,9 @@ import org.springframework.stereotype.Service;
 
 import com.example.javatest.models.ILegend;
 import com.example.javatest.models.Rect;
-// import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.charset.StandardCharsets;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

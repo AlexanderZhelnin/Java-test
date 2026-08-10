@@ -16,12 +16,14 @@ public class PolygonService {
 
     private int getNextIndex(int curIndex, int len) {
         curIndex += 2;
-        if (curIndex >= len) curIndex = 0;
+        if (curIndex >= len)
+            curIndex = 0;
         return curIndex;
     }
 
     private double[] clipLeft(double[] coords, double left) {
-        if (coords.length == 0) return coords;
+        if (coords.length == 0)
+            return coords;
 
         List<Double> pl = new ArrayList<>();
         int curIndex = 0;
@@ -61,7 +63,8 @@ public class PolygonService {
     }
 
     private double[] clipRight(double[] coords, double right) {
-        if (coords.length == 0) return coords;
+        if (coords.length == 0)
+            return coords;
 
         List<Double> pl = new ArrayList<>();
         int curIndex = 0;
@@ -102,7 +105,8 @@ public class PolygonService {
     }
 
     private double[] clipBottom(double[] coords, double bottom) {
-        if (coords.length == 0) return coords;
+        if (coords.length == 0)
+            return coords;
 
         List<Double> pl = new ArrayList<>();
         int curIndex = 0;
@@ -142,7 +146,8 @@ public class PolygonService {
     }
 
     private double[] clipTop(double[] coords, double top) {
-        if (coords.length == 0) return coords;
+        if (coords.length == 0)
+            return coords;
 
         List<Double> pl = new ArrayList<>();
         int curIndex = 0;
@@ -190,17 +195,14 @@ public class PolygonService {
                 ? clipLeft(g.coords, rect.left)
                 : g.coords.clone();
 
-        if (g.rect.bottom < rect.bottom) {
+        if (g.rect.bottom < rect.bottom)
             res = clipBottom(res, rect.bottom);
-        }
 
-        if (g.rect.right > rect.right) {
+        if (g.rect.right > rect.right)
             res = clipRight(res, rect.right);
-        }
 
-        if (g.rect.top > rect.top) {
+        if (g.rect.top > rect.top)
             res = clipTop(res, rect.top);
-        }
 
         return res;
     }
