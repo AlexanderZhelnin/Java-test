@@ -1,17 +1,18 @@
 package com.example.javatest.service;
 
+import com.example.javatest.arena.*;
 import com.example.javatest.models.*;
 
+// import java.lang.foreign.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.springframework.stereotype.Service;
 
-/**
- * Сервис отрисовки (аналог Drawer.cs)
- */
+/** Сервис отрисовки */
 @Service
-public class DrawerService {
+public final class DrawerService {
 
     private final PolygonService polygonService;
     private final PolylineService polylineService;
@@ -23,74 +24,64 @@ public class DrawerService {
         this.calcService = calcService;
     }
 
-    /**
-     * Отсечение графических образов по прямоугольнику
-     */
-    private List<IObraz> clipPrimitives(ILegend l, Rect rect) {
-        List<IObraz> result = new ArrayList<>();
+    /** Отсечение графических образов по прямоугольнику */
+    private void clipPrimitives(ILegend l, Rect rect, Consumer<Primitive> emit) {
 
-        for (IPrimitive g : l.primitives) {
-            if (g.rect.left >= rect.left && g.rect.bottom >= rect.bottom && g.rect.right <= rect.right && g.rect.top <= rect.top) {
+        for (var g : l.primitives) {
+            if (g.rect.left >= rect.left && g.rect.bottom >= rect.bottom && g.rect.right <= rect.right
+                    && g.rect.top <= rect.top) {
                 // Целиком лежит внутри прямоугольника
-                IObraz obraz = new IObraz();
-                obraz.name = g.name;
-                obraz.coords = g.coords.clone();
-                result.add(obraz);
-            } else if (g.rect.left < rect.right && g.rect.bottom < rect.top && g.rect.right > rect.left && g.rect.top > rect.bottom) {
+                emit.accept(g);
+            } else if (g.rect.left < rect.right && g.rect.bottom < rect.top && g.rect.right > rect.left
+                    && g.rect.top > rect.bottom) {
                 // Необходимо отсекать
                 switch (l.type) {
                     case LINE:
-                        List<double[]> csList = polylineService.clipPolyline(g, rect);
-                        for (double[] cs : csList) {
-                            IObraz obraz = new IObraz();
+                        var csList = polylineService.clipPolyline(g, rect);
+                        for (var cs : csList) {
+                            var obraz = new Primitive();
                             obraz.name = g.name;
                             obraz.coords = cs;
-                            result.add(obraz);
+                            emit.accept(obraz);
                         }
                         break;
                     case POLYGON:
-                        double[] cs = polygonService.clipPolygon(g, rect);
+                        var cs = polygonService.clipPolygon(g, rect);
                         if (cs.length > 0) {
-                            IObraz obraz = new IObraz();
+                            var obraz = new Primitive();
                             obraz.name = g.name;
                             obraz.coords = cs;
-                            result.add(obraz);
+                            emit.accept(obraz);
                         }
                         break;
                 }
             }
         }
-
-        return result;
     }
 
-    /**
-     * Подготовка данных для отрисовки
-     */
-    public List<ILayer> build(ILegend[] ls, DrawProperties pr, Rect rect) {
-        List<ILayer> result = new ArrayList<>();
+    /** Подготовка данных для отрисовки */
+    public List<Layer> build(ILegend[] ls, DrawProperties pr, Rect rect) {
+        var result = new ArrayList<Layer>();
 
-        double mashtab = 1 / pr.scale;
+        var mashtab = 1 / pr.scale;
 
         for (ILegend l : ls) {
-            if (l.mashtabRange.min > pr.mashtab ||
-                    l.mashtabRange.max < pr.mashtab)
+            if (l.mashtabRange.min > pr.mashtab || l.mashtabRange.max < pr.mashtab)
                 continue;
 
-            List<IObraz> mas = new ArrayList<>();
+            var mas = new ArrayList<Obraz>(l.primitives.length);
 
-
-            for (IObraz obraz : clipPrimitives(l, rect)) {
-                double[] csOpt = calcService.optimize(obraz.coords, mashtab);
+            clipPrimitives(l, rect, (obraz) -> {
+                var csOpt = calcService.optimize(obraz.coords.clone(), mashtab);
                 calcService.translate(csOpt, pr);
 
-                IObraz newObraz = new IObraz();
+                var newObraz = new Obraz();
                 newObraz.name = obraz.name;
                 newObraz.coords = csOpt;
                 mas.add(newObraz);
-            }
+            });
 
-            ILayer layer = new ILayer();
+            var layer = new Layer();
             layer.legendId = l.id;
             layer.obrazes = mas;
             result.add(layer);
@@ -98,4 +89,43 @@ public class DrawerService {
 
         return result;
     }
+
+    /** Подготовка данных для отрисовки */
+    public List<LayerBlazing1> build(Arenas arenas, ILegend[] ls, DrawProperties pr,
+            Rect rect) {
+
+        var result = new ArrayList<LayerBlazing1>();
+
+        var mashtab = 1 / pr.scale;
+
+        for (ILegend l : ls) {
+            if (l.mashtabRange.min > pr.mashtab ||
+                    l.mashtabRange.max < pr.mashtab)
+                continue;
+
+            var obrazes = arenas.obrazAllocator.alloc(l.primitives.length, arenas.sliceObrazesAllocator);
+
+            var array = obrazes.array;
+            // var i = obrazes.start;
+             var i = new Indexer(obrazes.start);
+
+            clipPrimitives(l, rect, (obraz) -> {
+
+                var csOpt = calcService.optimize(arenas.doubleAllocator, obraz.coords, mashtab);
+                calcService.translate(csOpt, pr);
+
+                var newObraz = (ObrazBlazing1) array[i.i++];
+                newObraz.name = obraz.name;
+                newObraz.coords = csOpt;
+            });
+
+            var layer = new LayerBlazing1();
+            layer.legendId = l.id;
+            layer.obrazes = obrazes;
+            result.add(layer);
+        }
+
+        return result;
+    }
+
 }

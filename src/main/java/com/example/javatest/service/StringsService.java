@@ -2,33 +2,29 @@ package com.example.javatest.service;
 
 import org.springframework.stereotype.Service;
 
-/**
- * Сервис для натуральной сортировки строк (аналог Strings.cs)
- */
+/** Сервис для натуральной сортировки строк (аналог Strings.cs) */
 @Service
 public class StringsService {
 
-    /**
-     * Натуральное сравнение строк
-     */
+    /** Натуральное сравнение строк */
     public int compare(String s1, String s2) {
-        boolean ne1 = (s1 == null || s1.isEmpty());
-        boolean ne2 = (s2 == null || s2.isEmpty());
+        var ne1 = (s1 == null || s1.isEmpty());
+        var ne2 = (s2 == null || s2.isEmpty());
 
         if (ne1 && ne2) return 0;
         if (ne1) return -1;
         if (ne2) return 1;
 
-        int i1 = 0;
-        int i2 = 0;
+        var i1 = 0;
+        var i2 = 0;
 
         while (i1 < s1.length() && i2 < s2.length()) {
             char c1 = s1.charAt(i1);
             char c2 = s2.charAt(i2);
 
             if (c1 >= '0' && c1 <= '9' && c2 >= '0' && c2 <= '9') {
-                int num1 = c1 - '0';
-                int num2 = c2 - '0';
+                var num1 = c1 - '0';
+                var num2 = c2 - '0';
 
                 i1++;
                 i2++;

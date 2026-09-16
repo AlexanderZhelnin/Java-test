@@ -21,5 +21,5 @@ public class ILegend {
     /** Надпись */
     public ILegendText text;
     /** Графические примитивы */
-    public IPrimitive[] primitives;
+    public Primitive[] primitives;
 }

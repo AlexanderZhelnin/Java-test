@@ -1,18 +1,16 @@
 package com.example.javatest.service;
 
-import com.example.javatest.models.IPrimitive;
+import com.example.javatest.models.Primitive;
 import com.example.javatest.models.Rect;
 
 import java.util.ArrayList;
-import java.util.List;
+// import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-/**
- * Сервис отсечения полигонов
- */
+/** Сервис отсечения полигонов */
 @Service
-public class PolygonService {
+public final class PolygonService {
 
     private int getNextIndex(int curIndex, int len) {
         curIndex += 2;
@@ -25,11 +23,11 @@ public class PolygonService {
         if (coords.length == 0)
             return coords;
 
-        List<Double> pl = new ArrayList<>();
-        int curIndex = 0;
+        var pl = new ArrayList<Double>();
+        var curIndex = 0;
 
-        double px1 = coords[0];
-        double py1 = coords[1];
+        var px1 = coords[0];
+        var py1 = coords[1];
 
         if (px1 >= left) {
             pl.add(px1);
@@ -37,10 +35,10 @@ public class PolygonService {
         }
 
         int len = coords.length / 2;
-        for (int i = 1; i <= len; i++) {
+        for (var i = 1; i <= len; i++) {
             curIndex = getNextIndex(curIndex, coords.length);
-            double px2 = coords[curIndex];
-            double py2 = coords[curIndex + 1];
+            var px2 = coords[curIndex];
+            var py2 = coords[curIndex + 1];
 
             if (px1 >= left && px2 >= left) {
                 pl.add(px2);
@@ -66,23 +64,23 @@ public class PolygonService {
         if (coords.length == 0)
             return coords;
 
-        List<Double> pl = new ArrayList<>();
-        int curIndex = 0;
+        var pl = new ArrayList<Double>();
+        var curIndex = 0;
 
-        double px1 = coords[0];
-        double py1 = coords[1];
+        var px1 = coords[0];
+        var py1 = coords[1];
 
         if (px1 <= right) {
             pl.add(px1);
             pl.add(py1);
         }
-        int len = coords.length / 2;
+        var len = coords.length / 2;
 
-        for (int i = 0; i < len; i++) {
+        for (var i = 0; i < len; i++) {
             curIndex = getNextIndex(curIndex, coords.length);
 
-            double px2 = coords[curIndex];
-            double py2 = coords[curIndex + 1];
+            var px2 = coords[curIndex];
+            var py2 = coords[curIndex + 1];
 
             if (px1 <= right && px2 <= right) {
                 pl.add(px2);
@@ -108,22 +106,22 @@ public class PolygonService {
         if (coords.length == 0)
             return coords;
 
-        List<Double> pl = new ArrayList<>();
-        int curIndex = 0;
+        var pl = new ArrayList<Double>();
+        var curIndex = 0;
 
-        double px1 = coords[0];
-        double py1 = coords[1];
+        var px1 = coords[0];
+        var py1 = coords[1];
 
         if (py1 >= bottom) {
             pl.add(px1);
             pl.add(py1);
         }
 
-        int len = coords.length / 2;
-        for (int i = 0; i < len; i++) {
+        var len = coords.length / 2;
+        for (var i = 0; i < len; i++) {
             curIndex = getNextIndex(curIndex, coords.length);
-            double px2 = coords[curIndex];
-            double py2 = coords[curIndex + 1];
+            var px2 = coords[curIndex];
+            var py2 = coords[curIndex + 1];
 
             if (py1 >= bottom && py2 >= bottom) {
                 pl.add(px2);
@@ -149,22 +147,22 @@ public class PolygonService {
         if (coords.length == 0)
             return coords;
 
-        List<Double> pl = new ArrayList<>();
+        var pl = new ArrayList<Double>();
         int curIndex = 0;
 
-        double px1 = coords[0];
-        double py1 = coords[1];
+        var px1 = coords[0];
+        var py1 = coords[1];
 
         if (py1 <= top) {
             pl.add(px1);
             pl.add(py1);
         }
 
-        int len = coords.length / 2;
-        for (int i = 0; i < len; i++) {
+        var len = coords.length / 2;
+        for (var i = 0; i < len; i++) {
             curIndex = getNextIndex(curIndex, coords.length);
-            double px2 = coords[curIndex];
-            double py2 = coords[curIndex + 1];
+            var px2 = coords[curIndex];
+            var py2 = coords[curIndex + 1];
 
             if (py1 <= top && py2 <= top) {
                 pl.add(px2);
@@ -190,8 +188,8 @@ public class PolygonService {
     /**
      * Отсечение полигона по прямоугольнику
      */
-    public double[] clipPolygon(IPrimitive g, Rect rect) {
-        double[] res = (g.rect.left < rect.left)
+    public double[] clipPolygon(Primitive g, Rect rect) {
+        var res = (g.rect.left < rect.left)
                 ? clipLeft(g.coords, rect.left)
                 : g.coords.clone();
 
