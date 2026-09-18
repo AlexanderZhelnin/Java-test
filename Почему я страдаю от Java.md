@@ -36,6 +36,19 @@ public class SampleCollection<T>
 }
 ```
 
+### *Вот как это делает Golang*
+
+```Go
+type SampleCollection[T any] struct{ arr []T }
+
+// Это что-то типа конструктора (фабричная функция)
+func NewSampleCollection[T any]() SampleCollection[T] {
+    return SampleCollection {
+        arr: make([]T, 100)
+    }
+}
+```
+
 ### *Вот как это делает Python*
 
 ```python
@@ -182,7 +195,7 @@ function *doGenerator(): Generator<number>
 {
     // внутри любая сложная логика
     for(var i = 0; i < 100; i++)
-        yield 1;
+        yield i;
 }
 
 
@@ -322,6 +335,65 @@ print(count)
 ```
 
 ## Нет перезагрузки операторов
+
+### *Вот как это делает C#*
+
+```C#
+public struct Coord
+{
+    public Coord(double x, double y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+
+    public double x;
+    public double y;
+
+
+    public static Coord operator +(Coord c1, Coord c2) =>
+        new sphCoord(c1.x + c2.x, c1.y + c2.y);
+}
+
+// Тогда при использовании можно
+var p1 =  new Coord(1, 2);
+var p2 =  new Coord(3, 4);
+
+var result =  p1 + p2;
+
+Console.WriteLine($"x: {result.x} - y: {result.y}"); // тут будет x: 4 - y: 6
+```
+
+*Операторов которые можно перезагрузить много, влоть до преобразования типа*
+
+```C#
+
+public struct Coord
+{
+    public Coord(double x, double y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+
+    public double x;
+    public double y;
+
+
+    // А давайте автоматически сделаем строку, это только что бы показать
+    public static implicit operator string(Coord c) =>
+        $"x: {с.x} - y: {с.y}";
+}
+
+// Тогда будет при использовании
+var p = new Coord(1, 2);
+string s = p; // или функция у нас будет принимать строку.
+```
+
+*Последний пример я часто использовал, когда есть уникальный идентификатор и объект, которые его содержит и нужно именно идентификатор*
+
+[![Видео](https://cloud.mail.ru/public/hnwW/QLg43ihm6)](https://youtu.be/l2OmsgB72Dg)
+
 
 ### Перезагрузка есть в Kotlin, C#, F#, Rust
 
